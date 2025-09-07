@@ -1,120 +1,203 @@
-# Turborepo starter
+# sofof‑todo
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+A comprehensive full-stack TODO application leveraging a Turborepo monorepo.
 
-## Using this example
+- **Backend API**: Built with NestJS
+- **Frontend**: Built with Next.js
 
-Run the following command:
+---
 
-```bash
-npx create-turbo@latest -e with-nestjs
+## Table of Contents
+
+1. [Tech Stack](#tech-stack)
+2. [Project Structure](#project-structure)
+3. [Prerequisites](#prerequisites)
+4. [Installation & Running Locally (Without Docker)](#installation--running-locally)
+5. [Docker Setup (Optional)](#docker-setup-optional)
+6. [Common Commands](#common-commands)
+7. [API Overview](#api-overview)
+8. [Troubleshooting & Tips](#troubleshooting--tips)
+
+---
+
+## Tech Stack
+
+### Backend (API)
+
+- Framework: **NestJS**
+- Language: **TypeScript**
+
+### Frontend (Web)
+
+- Framework: **Next.js**
+
+### Monorepo & Tooling
+
+- Monorepo Management: **Turborepo**
+- Package Manager: **npm**
+- Optional Containerization: **Docker** & **Docker Compose**
+
+---
+
+## Project Structure
+
+```
+sofof-todo/
+├── apps/
+│   ├── api/   — NestJS backend
+│   └── web/   — Next.js frontend
+├── packages/
+│   ├── @repo/eslint-config       — ESLint & Prettier
+│   ├── @repo/jest-config         — Jest setup
+│   └── @repo/typescript-config   — Shared TypeScript settings
+├── .env.example
+├── docker-compose.yml
+├── turbo.json
+├── package.json
+└── README.md
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## Prerequisites
 
-### Apps and Packages
+Ensure the following are installed prior to setup:
 
-    .
-    ├── apps
-    │   ├── api                       # NestJS app (https://nestjs.com).
-    │   └── web                       # Next.js app (https://nextjs.org).
-    └── packages
-        ├── @repo/api                 # Shared `NestJS` resources.
-        ├── @repo/eslint-config       # `eslint` configurations (includes `prettier`)
-        ├── @repo/jest-config         # `jest` configurations
-        ├── @repo/typescript-config   # `tsconfig.json`s used throughout the monorepo
-        └── @repo/ui                  # Shareable stub React component library.
+- **Node.js** (v18 or later recommended)
+- **npm** (comes with Node.js)
+- **Docker** & **Docker Compose** (optional for container usage)
 
-Each package and application are 100% [TypeScript](https://www.typescriptlang.org/) safe.
+---
 
-### Utilities
+## Installation & Running Locally
 
-This `Turborepo` has some additional tools already set for you:
+1. **Clone the repository**
 
-- [TypeScript](https://www.typescriptlang.org/) for static type-safety
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-- [Jest](https://prettier.io) & [Playwright](https://playwright.dev/) for testing
+   ```bash
+   git clone https://github.com/ashrafemon/sofof-todo.git
+   cd sofof-todo
+   ```
 
-### Commands
+2. **Install dependencies**
 
-This `Turborepo` already configured useful commands for all your apps and packages.
+   ```bash
+   npm install
+   ```
 
-#### Build
+3. **Set up environment variables**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Update the `.env` files in:
+   - Root directory
+   - `apps/api`
+   - `apps/web`
+
+   Make sure `DATABASE_URL` in `apps/api/.env` points to the correct Docker DB connection string.
+
+4. **Launch database containers**
+
+   ```bash
+   docker compose up -d
+   ```
+
+5. **Ensure database user permissions**
+
+   Use phpMyAdmin (if included) or another tool to ensure your DB user has access.
+
+6. **Apply Prisma Schema**
+
+   Navigate to the API folder:
+
+   ```bash
+   cd apps/api
+   ```
+
+   Then either:
+   - **Option A** (Quick sync without migration history):
+
+     ```bash
+     npx prisma db push
+     ```
+
+   - **Option B** (Recommended for dev):
+
+     ```bash
+     npx prisma migrate dev --name init
+     ```
+
+   - **Option C** (Recommended for dev):
+
+     ```bash
+     npx prisma db seed
+     ```
+
+   Then go back to the root:
+
+   ```bash
+   cd ../../
+   ```
+
+7. **Start development servers**
+
+   ```bash
+   npm run dev
+   ```
+
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - API: [http://localhost:5000](http://localhost:5000)
+
+---
+
+## Docker Setup (Optional)
+
+To build and run the full stack in Docker:
 
 ```bash
-# Will build all the app & packages with the supported `build` script.
-pnpm run build
-
-# ℹ️ If you plan to only build apps individually,
-# Please make sure you've built the packages first.
+docker-compose up --build
 ```
 
-#### Develop
+This will run both API and web apps as services in isolated containers.
 
-```bash
-# Will run the development server for all the app & packages with the supported `dev` script.
-pnpm run dev
-```
+---
 
-#### test
+## Common Commands
 
-```bash
-# Will launch a test suites for all the app & packages with the supported `test` script.
-pnpm run test
+| Command            | Description                           |
+| ------------------ | ------------------------------------- |
+| `npm run dev`      | Run both frontend and API in dev mode |
+| `npm run build`    | Build all apps and packages           |
+| `npm run test`     | Run all Jest tests                    |
+| `npm run test:e2e` | Run end-to-end tests (if configured)  |
+| `npm run lint`     | Check code quality using ESLint       |
+| `npm run format`   | Format code using Prettier            |
 
-# You can launch e2e testes with `test:e2e`
-pnpm run test:e2e
+---
 
-# See `@repo/jest-config` to customize the behavior.
-```
+## API Overview
 
-#### Lint
+Common endpoints (subject to implementation):
 
-```bash
-# Will lint all the app & packages with the supported `lint` script.
-# See `@repo/eslint-config` to customize the behavior.
-pnpm run lint
-```
+- `GET /todos` — Get all tasks
+- `POST /todos` — Create a new task
+- `GET /todos/:id` — Get task by ID
+- `PATCH /todos/:id` — Update a task
+- `DELETE /todos/:id` — Delete a task
 
-#### Format
+---
 
-```bash
-# Will format all the supported `.ts,.js,json,.tsx,.jsx` files.
-# See `@repo/eslint-config/prettier-base.js` to customize the behavior.
-pnpm format
-```
+## Troubleshooting & Tips
 
-### Remote Caching
+- Check `.env` values if apps fail to start
+- Ensure no port conflicts (API on `5000`, frontend on `3000`)
+- Use `docker ps` to confirm containers are running
+- If Prisma fails, make sure DB is up and `DATABASE_URL` is correct
+- To reset your DB:
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+  ```bash
+  npx prisma migrate reset
+  ```
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```bash
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```bash
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+---
