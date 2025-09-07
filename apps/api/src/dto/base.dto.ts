@@ -9,6 +9,12 @@ import {
 import { IsStringOrStringArray } from 'src/utils/decorators/string_array.decorator';
 import { OrderBy } from './enums.dto';
 
+export type RequestWithAuth = Request & {
+  auth: {
+    id: string;
+  };
+};
+
 export class DefaultDto {
   @ApiPropertyOptional()
   @IsNumber()

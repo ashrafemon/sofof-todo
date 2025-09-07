@@ -28,6 +28,7 @@ export class TodosRepository {
       );
 
       if (queries.status) condition.status = queries.status;
+      if (queries.userId) condition.userId = queries.userId;
       if (queries.search) condition.name = { contains: queries.search };
 
       const orderKey = queries.order_field ?? 'createdAt';
@@ -80,6 +81,7 @@ export class TodosRepository {
 
       const idKey = queries.id_key ?? 'id';
       const condition: Record<string, any> = { [idKey]: id };
+      if (queries.userId) condition.userId = queries.userId;
 
       const doc = await this.db.task.findFirst({
         where: condition,
@@ -127,11 +129,12 @@ export class TodosRepository {
   async updateDoc(
     id: string,
     body: TaskUpdateDto,
-    queries?: { id_key?: string },
+    queries?: { id_key?: string; userId?: string },
   ) {
     try {
       const idKey = queries.id_key ?? 'id';
       const condition: Record<string, any> = { [idKey]: id };
+      if (queries.userId) condition.userId = queries.userId;
 
       let doc = await this.db.task.findFirst({
         where: condition,
@@ -163,10 +166,11 @@ export class TodosRepository {
     }
   }
 
-  async deleteDoc(id: string, queries?: { id_key?: string }) {
+  async deleteDoc(id: string, queries?: { id_key?: string; userId?: string }) {
     try {
       const idKey = queries.id_key ?? 'id';
       const condition: Record<string, any> = { [idKey]: id };
+      if (queries.userId) condition.userId = queries.userId;
 
       const doc = await this.db.task.findFirst({ where: condition });
       if (!doc) {

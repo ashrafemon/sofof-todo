@@ -2,12 +2,14 @@
 
 import React from 'react';
 import Button from './ui/Button';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import { logout } from '../stores/reducers/auth';
 import { redirect } from 'next/navigation';
+import { RootState } from '../stores';
 
 const Header = () => {
+  const { currentUser } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
 
   const logoutHandler = () => {
@@ -20,7 +22,11 @@ const Header = () => {
     <div className="card bg-base-300">
       <div className="card-body">
         <details className="dropdown dropdown-end ml-auto">
-          <summary className="btn btn-ghost">
+          <summary className="btn btn-ghost flex flex-row gap-1 items-center">
+            <div className="flex flex-col gap-1">
+              <p className="text-sm">{currentUser?.name}</p>
+              <p className="text-xs">{currentUser?.email}</p>
+            </div>
             <div className="avatar avatar-placeholder ml-auto">
               <div className="bg-neutral text-neutral-content w-6 rounded-full">
                 <span className="text-lg">D</span>

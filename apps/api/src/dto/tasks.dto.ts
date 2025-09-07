@@ -14,9 +14,19 @@ export class TaskQueryDto extends DefaultDto {
   @IsOptional()
   @IsEnum(TaskStatus)
   status?: TaskStatus;
+
+  @ApiPropertyOptional({ enum: TaskStatus })
+  @IsOptional()
+  @IsString()
+  userId?: string;
 }
 
 export class TaskStoreDto {
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  userId: string;
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
